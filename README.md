@@ -1,5 +1,7 @@
 # ExifTool-Java
+
 [![CircleCI](https://circleci.com/gh/FreddieLindsey/exiftool-java/tree/master.svg?style=svg)](https://circleci.com/gh/FreddieLindsey/exiftool-java/tree/master)
+
 Java wrapper around Phil Harvey's exiftool - https://www.sno.phy.queensu.ca/~phil/exiftool
 
 ## Getting Started
