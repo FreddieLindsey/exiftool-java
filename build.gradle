@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'idea'
+    id 'com.palantir.circle.style' version '1.1.2'
 }
 
 group 'com.lindsey.wrapper'
