@@ -43,8 +43,8 @@ public class ExifTool {
         }
     }
 
-    public void cancelLongRunningProcess() {
-        longRunningProcess.destroy();
+    public void cancelLongRunningProcess() throws InterruptedException {
+        longRunningProcess.destroyForcibly().waitFor();
         assert !longRunningProcess.isAlive() : "Long running process is still alive.";
     }
 
