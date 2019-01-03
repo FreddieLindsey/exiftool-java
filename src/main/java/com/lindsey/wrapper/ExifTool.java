@@ -1,14 +1,18 @@
 package com.lindsey.wrapper;
 
+import javafx.util.Pair;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.logging.Level;
+
+import static java.lang.Double.parseDouble;
 
 public class ExifTool {
+
+    private static Double INSTALLED_VERSION;
 
     private final Set<Feature> features;
     private final Logger logger;
@@ -17,7 +21,7 @@ public class ExifTool {
 
     private ExifTool(Set<Feature> features, Logger logger) {
         this.features = features;
-        this.logger = logger;
+        this.logger = logger != null ? logger : LoggerFactory.getLogger(ExifTool.class);
 
         assert(features.stream().allMatch(feature -> {
             try {
@@ -28,8 +32,15 @@ public class ExifTool {
         }));
     }
 
-    public void startLongRunningProcess() {
-
+    public void startLongRunningProcess() throws IOException, InterruptedException {
+        if (features.contains(Feature.STAY_OPEN)) {
+            List<String> argsList = new ArrayList<>();
+            argsList.add("exiftool");
+            if (Feature.hasFlag(Feature.STAY_OPEN)) {
+                argsList.add(Feature.getFlag(Feature.STAY_OPEN));
+            }
+            longRunningProcess = CommandRunner.run(argsList);
+        }
     }
 
     public void cancelLongRunningProcess() {
@@ -37,12 +48,20 @@ public class ExifTool {
         assert(!longRunningProcess.isAlive());
     }
 
-    public static Double getInstalledVersion() throws IOException, InterruptedException {
-        List<String> argsList = new ArrayList<>();
-        argsList.add("exiftool");
-        argsList.add("-ver");
-        CommandRunner.run(argsList.toArray(new String[]{}));
-        return 0.0;
+    public Double getInstalledVersion() throws IOException, InterruptedException {
+        if (INSTALLED_VERSION == null) {
+            List<String> argsList = new ArrayList<>();
+            argsList.add("exiftool");
+            argsList.add("-ver");
+            logger.debug("Running command with args: {}", argsList);
+            Pair<List<String>, List<String>> result = CommandRunner.runAndFinish(argsList);
+            if (result.getKey().size() == 0) {
+                throw new RuntimeException("Could not get installed version of ExifTool. Is ExifTool installed?");
+            }
+            logger.info("Installed ExifTool Version: {}", result.getKey());
+            INSTALLED_VERSION = parseDouble(result.getKey().get(0));
+        }
+        return INSTALLED_VERSION;
     }
 
     public static class Builder {
