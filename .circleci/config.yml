@@ -15,8 +15,8 @@ jobs:
       - run:
           name: Setup PATH variable
           command: |
-            mkdir /exiftool
-            echo 'export PATH=/exiftool:$PATH' >> $BASH_ENV
+            mkdir /usr/local/bin/exiftool
+            echo 'export PATH=/usr/local/bin/exiftool:$PATH' >> $BASH_ENV
 
       - run:
           name: Download and Install ExifTool
@@ -24,8 +24,8 @@ jobs:
             curl -O exiftool.tar.gz http://owl.phy.queensu.ca/~phil/exiftool/Image-ExifTool-$EXIFTOOL_VERSION.tar.gz
             tar -xvf exiftool.tar.gz
             cd Image-ExifTool-$EXIFTOOL_VERSION
-            mv exiftool /exiftool/
-            mv lib /exiftool/
+            mv exiftool /usr/local/bin/exiftool/
+            mv lib /usr/local/bin/exiftool/
 
       # Download and cache dependencies
       - restore_cache:
