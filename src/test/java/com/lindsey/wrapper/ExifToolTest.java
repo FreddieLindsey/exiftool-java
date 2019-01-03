@@ -5,16 +5,15 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static java.util.Collections.singleton;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class ExifToolTest {
 
     @Test
-    public void getInstalledVersionReturnsDouble() throws IOException, InterruptedException {
+    public void getInstalledVersionReturnsVersionGreaterThan0() throws IOException, InterruptedException {
         Double version = new ExifTool.Builder().build().getInstalledVersion();
 
-        assertEquals(version, 11.11, 0.0001);
+        assertTrue(version > 0);
     }
 
     @Test
