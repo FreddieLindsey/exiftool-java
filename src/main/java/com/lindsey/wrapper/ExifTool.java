@@ -45,7 +45,7 @@ public class ExifTool {
 
     public void cancelLongRunningProcess() {
         longRunningProcess.destroy();
-        assert(!longRunningProcess.isAlive());
+        assert !longRunningProcess.isAlive() : "Long running process is still alive.";
     }
 
     public Double getInstalledVersion() throws IOException, InterruptedException {
