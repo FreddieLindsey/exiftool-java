@@ -4,9 +4,28 @@ jobs:
     docker:
       - image: circleci/openjdk:8-jdk
 
+    environment:
+      EXIFTOOL_VERSION: 11.23
+      BASH_ENV: ~/.bashrc
+
     steps:
 
       - checkout
+
+      - run:
+          name: Setup PATH variable
+          command: |
+            mkdir /exiftool
+            echo 'export PATH=/exiftool:$PATH' >> $BASH_ENV
+
+      - run:
+          name: Download and Install ExifTool
+          command: |
+            curl -O exiftool.tar.gz http://owl.phy.queensu.ca/~phil/exiftool/Image-ExifTool-$EXIFTOOL_VERSION.tar.gz
+            tar -xvf exiftool.tar.gz
+            cd Image-ExifTool-$EXIFTOOL_VERSION
+            mv exiftool /exiftool/
+            mv lib /exiftool/
 
       # Download and cache dependencies
       - restore_cache:
