@@ -39,7 +39,7 @@ public final class CommandRunner {
     private static List<String> getStreamContent(InputStream inputStream) {
         Scanner scanner = new Scanner(inputStream);
         List<String> result = new ArrayList<>();
-        while (scanner.hasNext()) {
+        while (scanner.hasNextLine()) {
             result.add(scanner.nextLine());
         }
         return result;

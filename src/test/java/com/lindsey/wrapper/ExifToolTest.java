@@ -27,7 +27,7 @@ public class ExifToolTest {
     }
 
     @Test
-    public void canQueryFile() throws IOException, InterruptedException {
+    public void canQueryFileUsingShortLivedProcess() throws IOException, InterruptedException {
         ExifTool exifTool = new ExifTool.Builder().features(singleton(Feature.STAY_OPEN)).build();
 
         Map<Key, ?> queryResult = exifTool.query(
@@ -35,7 +35,23 @@ public class ExifToolTest {
                 singleton(Key.DATETIMEORIGINAL)
         );
 
-        assertEquals("2009:08:11 10:39:42", queryResult.get(Key.DATETIMEORIGINAL));
+        assertEquals("2019:01:01 00:00:00", queryResult.get(Key.DATETIMEORIGINAL));
+    }
+
+    @Test
+    public void canQueryFileUsingLongRunningProcess() throws IOException, InterruptedException {
+        ExifTool exifTool = new ExifTool.Builder().features(singleton(Feature.STAY_OPEN)).build();
+
+        exifTool.startLongRunningProcess();
+
+        Map<Key, ?> queryResult = exifTool.query(
+                new File("./src/test/resources/sample_files/datetimeoriginal.jpg"),
+                singleton(Key.DATETIMEORIGINAL)
+        );
+
+        exifTool.cancelLongRunningProcess();
+
+        assertEquals("2019:01:01 00:00:00", queryResult.get(Key.DATETIMEORIGINAL));
     }
 
 }
