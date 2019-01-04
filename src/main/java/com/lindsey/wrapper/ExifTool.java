@@ -4,9 +4,9 @@ import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.Level;
 
 import static java.lang.Double.parseDouble;
 
@@ -19,17 +19,18 @@ public class ExifTool {
 
     private Process longRunningProcess;
 
-    private ExifTool(Set<Feature> features, Logger logger) {
+    private ExifTool(Set<Feature> features, Logger logger) throws IOException, InterruptedException {
         this.features = features;
         this.logger = logger != null ? logger : LoggerFactory.getLogger(ExifTool.class);
 
-        assert(features.stream().allMatch(feature -> {
-            try {
-                return Feature.isCompatible(feature, getInstalledVersion());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+        Double installedVersion = getInstalledVersion();
+        features.forEach(feature -> {
+            if (!Feature.isCompatible(feature, installedVersion)) {
+                throw new UnsupportedOperationException(String.format(
+                        "Feature %s not supported by ExifTool version %s", feature, installedVersion
+                ));
             }
-        }));
+        });
     }
 
     public void startLongRunningProcess() throws IOException, InterruptedException {
@@ -64,6 +65,40 @@ public class ExifTool {
         return INSTALLED_VERSION;
     }
 
+    public <T> Map<Key, T> query(File file, Set<Key> keys) throws IOException, InterruptedException {
+        Map<Key, T> queryResult = new HashMap<>();
+        if (longRunningProcess != null && longRunningProcess.isAlive()) {
+            // Pass
+        } else {
+            List<String> argsList = new ArrayList<>();
+            argsList.add("exiftool");
+            argsList.add("-S");
+            for (Key key : keys) {
+                argsList.add(String.format("-%s", Key.getName(key)));
+            }
+            argsList.add(file.getAbsolutePath());
+            Pair<List<String>, List<String>> result = CommandRunner.runAndFinish(argsList);
+            List<String> stdOut = result.getKey();
+            List<String> stdErr = result.getValue();
+
+            if (stdErr.size() > 0) {
+                throw new RuntimeException(String.join("\n", stdErr));
+            }
+
+            for (String line : stdOut) {
+                List<String> lineSeparated = Arrays.asList(line.split(":"));
+                if (lineSeparated.size() < 2) {
+                    continue;
+                }
+                String name = lineSeparated.get(0).trim();
+                String value = String.join(":", lineSeparated.subList(1, lineSeparated.size())).trim();
+                Optional<Key> maybeKey = Key.findKeyWithName(name);
+                maybeKey.ifPresent(key -> queryResult.put(key, Key.parse(key, value)));
+            }
+        }
+        return queryResult;
+    }
+
     public static class Builder {
 
         private Logger logger;
@@ -79,7 +114,7 @@ public class ExifTool {
             return this;
         }
 
-        public ExifTool build() {
+        public ExifTool build() throws IOException, InterruptedException {
             return new ExifTool(features, logger);
         }
 
