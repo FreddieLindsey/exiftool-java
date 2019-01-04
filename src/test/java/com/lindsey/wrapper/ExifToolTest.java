@@ -54,4 +54,29 @@ public class ExifToolTest {
         assertEquals("2019:01:01 00:00:00", queryResult.get(Key.DATETIMEORIGINAL));
     }
 
+    @Test
+    public void longRunningProcessTakesLessTimeThanShortLived() throws IOException, InterruptedException {
+        ExifTool exifTool = new ExifTool.Builder().features(singleton(Feature.STAY_OPEN)).build();
+
+        exifTool.startLongRunningProcess();
+        Thread.sleep(100); // Give process time to start
+
+        long longRunningTime = System.currentTimeMillis();
+        exifTool.query(
+                new File("./src/test/resources/sample_files/datetimeoriginal.jpg"),
+                singleton(Key.DATETIMEORIGINAL)
+        );
+        longRunningTime = System.currentTimeMillis() - longRunningTime;
+        exifTool.cancelLongRunningProcess();
+
+        long shortLivedTime = System.currentTimeMillis();
+        exifTool.query(
+                new File("./src/test/resources/sample_files/datetimeoriginal.jpg"),
+                singleton(Key.DATETIMEORIGINAL)
+        );
+        shortLivedTime = System.currentTimeMillis() - shortLivedTime;
+
+        assertTrue(longRunningTime < shortLivedTime);
+    }
+
 }
