@@ -96,5 +96,3 @@ workflows:
       - checkout
       - build: { requires: [ install_exiftool, checkout ] }
       - test: { requires: [ install_exiftool, checkout ] }
-      - publish:
-          requires: [ build, test ]
