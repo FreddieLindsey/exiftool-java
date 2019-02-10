@@ -62,18 +62,22 @@ public class ExifToolTest {
         Thread.sleep(100); // Give process time to start
 
         long longRunningTime = System.currentTimeMillis();
-        exifTool.query(
-                new File("./src/test/resources/sample_files/datetimeoriginal.jpg"),
-                singleton(Key.DATETIMEORIGINAL)
-        );
+        for (int i = 0; i < 50; i++) {
+            exifTool.query(
+                    new File("./src/test/resources/sample_files/datetimeoriginal.jpg"),
+                    singleton(Key.DATETIMEORIGINAL)
+            );
+        }
         longRunningTime = System.currentTimeMillis() - longRunningTime;
         exifTool.cancelLongRunningProcess();
 
         long shortLivedTime = System.currentTimeMillis();
-        exifTool.query(
-                new File("./src/test/resources/sample_files/datetimeoriginal.jpg"),
-                singleton(Key.DATETIMEORIGINAL)
-        );
+        for (int i = 0; i < 50; i++) {
+            exifTool.query(
+                    new File("./src/test/resources/sample_files/datetimeoriginal.jpg"),
+                    singleton(Key.DATETIMEORIGINAL)
+            );
+        }
         shortLivedTime = System.currentTimeMillis() - shortLivedTime;
 
         assertTrue(longRunningTime < shortLivedTime);

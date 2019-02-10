@@ -1,21 +1,16 @@
 version: 2
 jobs:
-  build:
+  install_exiftool:
     docker:
       - image: circleci/openjdk:8-jdk
-
     environment:
       EXIFTOOL_VERSION: 11.23
-
     steps:
-
-      - checkout
-
       - run:
-          name: Setup PATH variable
-          command: |
-            mkdir /home/circleci/exiftool
-            echo 'export PATH=/home/circleci/exiftool:$PATH' >> $BASH_ENV
+        name: Setup PATH variable
+        command: |
+          mkdir /home/circleci/exiftool
+          echo 'export PATH=/home/circleci/exiftool:$PATH' >> $BASH_ENV
 
       - run:
           name: Download and Install ExifTool
@@ -25,30 +20,56 @@ jobs:
             cd Image-ExifTool-$EXIFTOOL_VERSION
             mv exiftool /home/circleci/exiftool/
             mv lib /home/circleci/exiftool/
+      - persist_to_workspace:
+          root: /home/circleci/
+          paths:
+            - exiftool
 
+
+  checkout:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    steps:
+      - checkout
       # Download and cache dependencies
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "build.gradle" }}
-
       - run: ./gradlew dependencies
-
       - save_cache:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "build.gradle" }}
+      - persist_to_workspace:
+          root: /home/circleci
+          paths:
+            - project
 
+  test:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    steps:
+      - attach_workspace:
+          at: /home/circleci
       - run: ./gradlew test
-
       - run:
           name: Save test results
           command: |
             mkdir -p ~/junit/
             find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/junit/ \;
           when: always
-
       - store_test_results:
           path: ~/junit
-
       - store_artifacts:
           path: ~/junit
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - install_exiftool
+      - checkout
+      - test:
+          requires:
+            - install_exiftool
+            - checkout
