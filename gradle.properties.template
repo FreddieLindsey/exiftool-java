@@ -1,0 +1,6 @@
+signing.keyId=${SIGNING_KEY_ID}
+signing.password=${SIGNING_PUBLIC_KEY_PASSWORD}
+signing.secretKeyRingFile=${SIGNING_SECRET_KEY_RING_FILE_PATH}
+
+ossrhUsername=${OSS_USERNAME}
+ossrhPassword=${OSS_PASSWORD}

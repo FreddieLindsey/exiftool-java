@@ -1,5 +1,6 @@
-package com.lindsey.wrapper;
+package io.github.freddielindsey;
 
+import com.lindsey.wrapper.CommandRunner;
 import javafx.util.Pair;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;

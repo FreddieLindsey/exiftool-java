@@ -1,5 +1,8 @@
-package com.lindsey.wrapper;
+package io.github.freddielindsey;
 
+import com.lindsey.wrapper.ExifTool;
+import com.lindsey.wrapper.Feature;
+import com.lindsey.wrapper.Key;
 import org.junit.Test;
 
 import java.io.File;

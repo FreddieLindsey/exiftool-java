@@ -45,6 +45,14 @@ jobs:
           paths:
             - project
 
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - run: ./gradlew build
+
   test:
     docker:
       - image: circleci/openjdk:8-jdk
@@ -68,13 +76,25 @@ jobs:
       - store_artifacts:
           path: ~/junit
 
+  publish:
+    docker:
+      - image: circleci/openjdk:8-jdk
+      steps:
+        - attach_workspace:
+            at: /home/circleci
+        - run:
+            name: Prepare gradle.properties
+            command: |
+              cat gradle.properties.template | envsubst > /home/circleci/gradle.properties
+        - run: ./gradlew uploadArchives
+
 workflows:
   version: 2
   build_and_test:
     jobs:
       - install_exiftool
       - checkout
-      - test:
-          requires:
-            - install_exiftool
-            - checkout
+      - build: { requires: [ install_exiftool, checkout ] }
+      - test: { requires: [ install_exiftool, checkout ] }
+      - publish:
+          requires: [ build, test ]
