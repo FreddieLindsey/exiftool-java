@@ -1,8 +1,5 @@
 package io.github.freddielindsey;
 
-import com.lindsey.wrapper.ExifTool;
-import com.lindsey.wrapper.Feature;
-import com.lindsey.wrapper.Key;
 import org.junit.Test;
 
 import java.io.File;
@@ -10,7 +7,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import static java.util.Collections.singleton;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ExifToolTest {
 

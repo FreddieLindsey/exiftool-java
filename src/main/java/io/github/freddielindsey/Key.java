@@ -1,4 +1,4 @@
-package com.lindsey.wrapper;
+package io.github.freddielindsey;
 
 import java.util.Arrays;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.lindsey.wrapper;
+package io.github.freddielindsey;
 
 import javafx.util.Pair;
 import org.slf4j.Logger;

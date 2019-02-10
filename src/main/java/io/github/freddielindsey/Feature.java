@@ -1,4 +1,4 @@
-package com.lindsey.wrapper;
+package io.github.freddielindsey;
 
 public enum Feature {
 
