@@ -22,6 +22,7 @@ jobs:
       - persist_to_workspace:
           root: /home/circleci/
           paths:
+            - $BASH_ENV
             - exiftool
 
 
