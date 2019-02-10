@@ -49,12 +49,10 @@ public enum Key {
     }
 
     public static Optional<Key> findKeyWithName(String name) {
-        for (Map.Entry<String, Key> entry : ENTRY_MAP.entrySet()) {
-            if (entry.getKey().equals(name)) {
-                return Optional.of(entry.getValue());
-            }
-        }
-        return Optional.empty();
+        return ENTRY_MAP.entrySet().stream()
+                .filter(entry -> entry.getKey().equals(name))
+                .map(Map.Entry::getValue)
+                .findFirst();
     }
 
     public static String getName(Key key) {
