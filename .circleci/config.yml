@@ -49,6 +49,11 @@ jobs:
     docker:
       - image: circleci/openjdk:8-jdk
     steps:
+      - run:
+          name: Enable exiftool PATH
+          command: |
+            echo 'export PATH=/home/circleci/exiftool:$PATH' >> $BASH_ENV
+            source $BASH_ENV
       - attach_workspace:
           at: /home/circleci
       - run: ./gradlew test
