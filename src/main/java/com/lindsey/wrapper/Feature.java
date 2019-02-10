@@ -9,10 +9,6 @@ public enum Feature {
     private final Double requiredVersion;
     private final String flag;
 
-    Feature(Double requiredVersion) {
-        this(requiredVersion, null);
-    }
-
     Feature(Double requiredVersion, String flag) {
         this.requiredVersion = requiredVersion;
         this.flag = flag;
